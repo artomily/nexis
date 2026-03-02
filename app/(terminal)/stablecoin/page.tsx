@@ -1,16 +1,55 @@
+import { ModuleHeroCard } from "@/components/cards/module-hero-card";
+import { KeyIndicatorCard } from "@/components/cards/key-indicator-card";
+import { AlertFeedCard } from "@/components/cards/alert-feed-card";
+import { RiskTimelineCard } from "@/components/cards/risk-timeline-card";
+import { DataTableCard } from "@/components/cards/data-table-card";
+import { moduleRiskSummaries } from "@/lib/mock-data";
+import { moduleDetails } from "@/lib/detail-data";
+
 export const metadata = {
   title: "Stablecoin Flow — RiskTerminal AI",
 };
 
 export default function StablecoinPage() {
+  const module = moduleRiskSummaries.find((m) => m.id === "stablecoin")!;
+  const detail = moduleDetails["stablecoin"];
+
   return (
-    <div className="flex flex-col items-center justify-center h-[60vh] gap-3">
-      <h1 className="font-mono text-2xl font-bold text-text-primary tracking-tight">
-        Stablecoin Flow
-      </h1>
-      <span className="text-[10px] uppercase tracking-[0.2em] text-text-tertiary font-mono">
-        Module Under Development
-      </span>
+    <div className="grid grid-cols-12 gap-4 auto-rows-auto">
+
+      {/* ── Row 1: Hero + Alerts ── */}
+      <div className="col-span-8">
+        <ModuleHeroCard module={module} detail={detail} />
+      </div>
+      <div className="col-span-4">
+        <AlertFeedCard alerts={detail.alerts} />
+      </div>
+
+      {/* ── Row 2: Key Indicators (4 × col-3) ── */}
+      {detail.keyIndicators.map((indicator) => (
+        <div key={indicator.label} className="col-span-3">
+          <KeyIndicatorCard data={indicator} />
+        </div>
+      ))}
+
+      {/* ── Row 3: Timeline + Stablecoin Supply ── */}
+      <div className="col-span-8 min-h-[340px]">
+        <RiskTimelineCard data={detail.timeline} />
+      </div>
+      <div className="col-span-4">
+        <DataTableCard
+          title="Stablecoin Supply Breakdown"
+          rows={[
+            { label: "USDT Total Supply", value: "$118.4B" },
+            { label: "USDT on Tron", value: "$58.2B (49%)" },
+            { label: "USDC Total Supply", value: "$34.8B" },
+            { label: "DAI Total Supply", value: "$5.2B" },
+            { label: "7D USDT Redemptions", value: "$890M" },
+            { label: "7D USDC Mints", value: "$210M" },
+          ]}
+        />
+      </div>
+
     </div>
   );
 }

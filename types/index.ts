@@ -54,3 +54,68 @@ export interface NavItem {
   href: string;
   segment: string;
 }
+
+// --- Module Detail Page Types ---
+
+export interface KeyIndicator {
+  label: string;
+  value: string;
+  change: string;
+  direction: "up" | "down" | "neutral";
+}
+
+export interface RiskAlert {
+  id: string;
+  severity: RiskLevel;
+  title: string;
+  description: string;
+  timestamp: string;
+}
+
+export interface ModuleDetailData {
+  aiAnalysis: string;
+  primaryDriver: string;
+  outlook7D: string;
+  keyIndicators: KeyIndicator[];
+  alerts: RiskAlert[];
+  timeline: RiskTimelinePoint[];
+}
+
+// --- Event Replay Types ---
+
+export interface HistoricalEvent {
+  id: string;
+  name: string;
+  date: string;
+  type: string;
+  impactLevel: RiskLevel;
+  peakRiskValue: number;
+  duration: string;
+  description: string;
+  analysis: string;
+  metrics: { label: string; value: string }[];
+  timeline: RiskTimelinePoint[];
+}
+
+// --- Simulation Types ---
+
+export interface SimulationResultRow {
+  metric: string;
+  baseline: string;
+  projected: string;
+  impact: string;
+  severity: RiskLevel;
+}
+
+export interface SimulationScenario {
+  id: string;
+  name: string;
+  type: string;
+  shockMagnitude: string;
+  timeHorizon: string;
+  description: string;
+  projectedPeakRisk: number;
+  estimatedLiquidations: string;
+  recoveryTime: string;
+  results: SimulationResultRow[];
+}
