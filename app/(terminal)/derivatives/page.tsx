@@ -33,7 +33,7 @@ export default function DerivativesPage() {
       ))}
 
       {/* ── Row 3: Timeline + Position Concentration ── */}
-      <div className="col-span-8 min-h-[340px]">
+      <div className="col-span-8 min-h-85">
         <RiskTimelineCard data={detail.timeline} />
       </div>
       <div className="col-span-4">

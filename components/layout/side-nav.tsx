@@ -9,7 +9,7 @@ export function SideNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed top-[52px] left-0 bottom-0 w-[220px] bg-bg-primary border-r border-border-subtle flex flex-col z-40">
+    <nav className="fixed top-13 left-0 bottom-0 w-55 bg-bg-primary border-r border-border-subtle flex flex-col z-40">
       <div className="flex-1 py-5 px-4">
         {/* Section label */}
         <div className="mb-4 px-3">

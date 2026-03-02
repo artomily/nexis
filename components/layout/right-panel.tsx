@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function RightPanel() {
   return (
-    <aside className="fixed top-[52px] right-0 bottom-0 w-[320px] bg-bg-panel border-l border-border-subtle z-40 overflow-y-auto">
+    <aside className="fixed top-13 right-0 bottom-0 w-[320px] bg-bg-panel border-l border-border-subtle z-40 overflow-y-auto">
       <div className="p-5">
         {/* Header */}
         <div className="mb-5">

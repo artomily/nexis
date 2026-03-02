@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MarketRiskCore } from "@/components/cards/market-risk-core";
 import { RiskMomentumCard } from "@/components/cards/risk-momentum-card";
 import { ModuleRiskCard } from "@/components/cards/module-risk-card";
@@ -24,7 +25,7 @@ export default function OverviewPage() {
   const systemic = moduleRiskSummaries.find((m) => m.id === "systemic")!;
 
   return (
-    <div className="grid grid-cols-12 gap-4 auto-rows-auto">
+    <div className="grid grid-cols-12 gap-4 auto-rows-auto pt-8">
 
       {/* ── Row 1: Hero + Momentum ── */}
       <div className="col-span-8">
@@ -34,32 +35,32 @@ export default function OverviewPage() {
         <RiskMomentumCard data={momentumData} />
       </div>
 
-      {/* ── Row 2: Module cards (3 × col-4) ── */}
-      <div className="col-span-4">
+      {/* ── Row 2: Module cards (3 × col-4) — clickable ── */}
+      <Link href="/liquidity" className="col-span-4 hover:opacity-80 transition-opacity duration-150">
         <ModuleRiskCard data={liquidity} />
-      </div>
-      <div className="col-span-4">
+      </Link>
+      <Link href="/derivatives" className="col-span-4 hover:opacity-80 transition-opacity duration-150">
         <ModuleRiskCard data={derivatives} />
-      </div>
-      <div className="col-span-4">
+      </Link>
+      <Link href="/whale" className="col-span-4 hover:opacity-80 transition-opacity duration-150">
         <ModuleRiskCard data={whale} />
-      </div>
+      </Link>
 
-      {/* ── Row 3: Wide module cards (2 × col-6) ── */}
-      <div className="col-span-6">
+      {/* ── Row 3: Wide module cards (2 × col-6) — clickable ── */}
+      <Link href="/stablecoin" className="col-span-6 hover:opacity-80 transition-opacity duration-150">
         <WideModuleCard data={stablecoin} />
-      </div>
-      <div className="col-span-6">
+      </Link>
+      <Link href="/systemic" className="col-span-6 hover:opacity-80 transition-opacity duration-150">
         <WideModuleCard data={systemic} />
-      </div>
+      </Link>
 
       {/* ── Row 4: Timeline + Simulation ── */}
-      <div className="col-span-8 min-h-[340px]">
+      <div className="col-span-8 min-h-85">
         <RiskTimelineCard data={riskTimeline} />
       </div>
-      <div className="col-span-4">
+      <Link href="/simulation" className="col-span-4 hover:opacity-80 transition-opacity duration-150">
         <SimulationCard />
-      </div>
+      </Link>
 
     </div>
   );

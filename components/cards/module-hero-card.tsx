@@ -52,7 +52,7 @@ export function ModuleHeroCard({ module, detail }: ModuleHeroCardProps) {
             </div>
 
             {/* Progress bar */}
-            <div className="h-[3px] w-full bg-bg-primary rounded-full overflow-hidden mt-4">
+            <div className="h-0.75 w-full bg-bg-primary rounded-full overflow-hidden mt-4">
               <div
                 className={cn("h-full rounded-full", getRiskBgClass(module.level))}
                 style={{ width: `${clampedValue}%` }}

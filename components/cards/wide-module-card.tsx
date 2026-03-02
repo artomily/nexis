@@ -49,7 +49,7 @@ export function WideModuleCard({ data }: WideModuleCardProps) {
           </div>
 
           {/* Progress bar */}
-          <div className="h-[3px] w-full bg-bg-primary rounded-full overflow-hidden">
+          <div className="h-0.75 w-full bg-bg-primary rounded-full overflow-hidden">
             <div
               className={cn("h-full rounded-full", getRiskBgClass(data.level))}
               style={{ width: `${clampedValue}%` }}
@@ -64,7 +64,7 @@ export function WideModuleCard({ data }: WideModuleCardProps) {
 
         {/* Right: sub-metrics grid */}
         {data.subMetrics && data.subMetrics.length > 0 && (
-          <div className="border-l border-border-subtle pl-6 min-w-[180px]">
+          <div className="border-l border-border-subtle pl-6 min-w-45">
             <div className="text-[10px] uppercase tracking-[0.15em] text-text-tertiary font-mono mb-3">
               Metrics
             </div>

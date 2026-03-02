@@ -1,79 +1,150 @@
-import { EventSummaryCard } from "@/components/cards/event-summary-card";
+"use client";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { formatRiskValue } from "@/lib/format";
+import { getRiskBadgeBgClass, getRiskLabel, getRiskColorClass, getRiskLevelFromValue } from "@/lib/risk-levels";
 import { RiskTimelineCard } from "@/components/cards/risk-timeline-card";
-import { DataTableCard } from "@/components/cards/data-table-card";
 import { historicalEvents } from "@/lib/detail-data";
-
-export const metadata = {
-  title: "Event Replay — RiskTerminal AI",
-};
+import type { HistoricalEvent } from "@/types";
 
 export default function ReplayPage() {
-  const featured = historicalEvents[0];
+  const [selected, setSelected] = useState<HistoricalEvent>(historicalEvents[0]);
 
   return (
-    <div className="grid grid-cols-12 gap-4 auto-rows-auto">
+    <div className="grid grid-cols-12 gap-4 pt-8 auto-rows-auto">
 
-      {/* ── Row 1: Page header + stats ── */}
-      <div className="col-span-5">
-        <div className="bg-bg-panel border border-border-subtle rounded-sm p-6 h-full flex flex-col gap-4">
-          <span className="text-[10px] uppercase tracking-[0.22em] text-text-tertiary font-mono">
-            Event Replay Engine
-          </span>
-          <h2 className="font-mono text-lg font-semibold text-text-primary tracking-tight">
-            Historical Risk Events
-          </h2>
-          <p className="text-[13px] text-text-secondary leading-relaxed flex-1">
-            Analyze past market stress events through the lens of the RiskTerminal AI framework.
-            Each event is reconstructed with real-time risk index trajectories, allowing institutional
-            teams to study cascade mechanics, contagion patterns, and recovery dynamics.
-          </p>
-          <div className="pt-3 border-t border-border-subtle">
-            <span className="text-[10px] uppercase tracking-[0.15em] text-text-tertiary font-mono">
-              Database
+      {/* ── Row 1: Page header ── */}
+      <div className="col-span-12">
+        <div className="bg-bg-panel border border-border-subtle rounded-sm px-6 py-4 flex items-center justify-between">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.22em] text-text-tertiary font-mono block mb-1">
+              Event Replay Engine
             </span>
-            <span className="font-mono text-[13px] text-text-primary ml-2 tabular-nums">
-              {historicalEvents.length} events indexed
-            </span>
+            <h2 className="font-mono text-base font-semibold text-text-primary tracking-tight">
+              Historical Risk Events
+            </h2>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-right">
+              <span className="text-[10px] uppercase tracking-[0.15em] text-text-tertiary font-mono block">
+                Database
+              </span>
+              <span className="font-mono text-sm text-text-primary tabular-nums">
+                {historicalEvents.length} events indexed
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] uppercase tracking-[0.15em] text-text-tertiary font-mono block">
+                Loaded
+              </span>
+              <span className={cn(
+                "font-mono text-sm font-semibold tabular-nums",
+                getRiskColorClass(getRiskLevelFromValue(selected.peakRiskValue))
+              )}>
+                Peak {formatRiskValue(selected.peakRiskValue)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-      <div className="col-span-7">
-        <DataTableCard
-          title="Event Comparison Matrix"
-          rows={historicalEvents.map((event) => ({
-            label: event.name,
-            value: `Peak ${event.peakRiskValue} · ${event.duration} · ${event.type}`,
-          }))}
-        />
+
+      {/* ── Row 2: Event selector cards (3 × col-4) ── */}
+      {historicalEvents.map((event) => {
+        const isActive = event.id === selected.id;
+        const level = getRiskLevelFromValue(event.peakRiskValue);
+        return (
+          <button
+            key={event.id}
+            onClick={() => setSelected(event)}
+            className={cn(
+              "col-span-4 text-left w-full",
+              "bg-bg-panel rounded-sm border transition-all duration-150",
+              isActive
+                ? "border-accent-blue ring-1 ring-accent-blue/30"
+                : "border-border-subtle hover:border-border-active"
+            )}
+          >
+            <div className="flex flex-col h-full">
+              {/* Card header */}
+              <div className="px-5 py-3 border-b border-border-subtle flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-[0.22em] text-text-tertiary font-mono">
+                  {event.type}
+                </span>
+                <div className="flex items-center gap-2">
+                  {isActive && (
+                    <span className="flex items-center gap-1 text-[9px] font-mono text-accent-blue uppercase tracking-wide">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse inline-block" />
+                      Loaded
+                    </span>
+                  )}
+                  <span className={cn(
+                    "text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded-sm tracking-wide",
+                    getRiskBadgeBgClass(level)
+                  )}>
+                    {getRiskLabel(level)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card body */}
+              <div className="p-5 flex gap-5 flex-1">
+                <div className="flex flex-col gap-2 flex-1">
+                  <h3 className="font-mono text-sm font-semibold text-text-primary tracking-tight leading-snug">
+                    {event.name}
+                  </h3>
+                  <p className="text-[11px] text-text-secondary leading-relaxed flex-1">
+                    {event.description}
+                  </p>
+                  <span className="text-[10px] font-mono text-text-tertiary">{event.date}</span>
+                </div>
+                <div className="border-l border-border-subtle pl-5 flex flex-col items-end justify-center gap-1">
+                  <span className="text-[10px] uppercase tracking-[0.15em] text-text-tertiary font-mono">
+                    Peak
+                  </span>
+                  <span className={cn(
+                    "font-mono text-[40px] leading-none font-bold tabular-nums",
+                    getRiskColorClass(level)
+                  )}>
+                    {formatRiskValue(event.peakRiskValue)}
+                  </span>
+                  <span className="text-[10px] font-mono text-text-tertiary">{event.duration}</span>
+                </div>
+              </div>
+            </div>
+          </button>
+        );
+      })}
+
+      {/* ── Row 3: Timeline chart (reactive) ── */}
+      <div className="col-span-8 min-h-85">
+        <RiskTimelineCard key={selected.id} data={selected.timeline} />
       </div>
 
-      {/* ── Row 2: Event cards (3 × col-4) ── */}
-      {historicalEvents.map((event) => (
-        <div key={event.id} className="col-span-4">
-          <EventSummaryCard event={event} />
-        </div>
-      ))}
-
-      {/* ── Row 3: Featured event timeline + analysis ── */}
-      <div className="col-span-8 min-h-[340px]">
-        <RiskTimelineCard data={featured.timeline} />
-      </div>
+      {/* ── Row 3b: Post-mortem analysis panel ── */}
       <div className="col-span-4">
         <div className="bg-bg-panel border border-border-subtle rounded-sm flex flex-col h-full">
-          <div className="px-5 py-3 border-b border-border-subtle">
+          <div className="px-5 py-3 border-b border-border-subtle flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-[0.22em] text-text-tertiary font-mono">
-              Featured Analysis
+              Post-Mortem Analysis
+            </span>
+            <span className={cn(
+              "text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded-sm tracking-wide",
+              getRiskBadgeBgClass(getRiskLevelFromValue(selected.peakRiskValue))
+            )}>
+              {selected.impactLevel}
             </span>
           </div>
-          <div className="px-5 py-4 flex-1">
-            <h3 className="font-mono text-sm font-semibold text-text-primary tracking-tight mb-3">
-              {featured.name}
-            </h3>
-            <p className="text-[12px] text-text-secondary leading-relaxed mb-4">
-              {featured.analysis}
-            </p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 border-t border-border-subtle">
-              {featured.metrics.map((metric) => (
+          <div className="px-5 py-4 flex-1 flex flex-col gap-4">
+            <div>
+              <h3 className="font-mono text-sm font-semibold text-text-primary tracking-tight mb-2">
+                {selected.name}
+              </h3>
+              <p className="text-[11px] text-text-secondary leading-relaxed">
+                {selected.analysis}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-3 border-t border-border-subtle mt-auto">
+              {selected.metrics.map((metric) => (
                 <div key={metric.label}>
                   <div className="text-[10px] text-text-tertiary font-mono uppercase tracking-wide truncate">
                     {metric.label}

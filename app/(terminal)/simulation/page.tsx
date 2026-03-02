@@ -1,3 +1,5 @@
+"use client";
+import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { formatRiskValue } from "@/lib/format";
 import {
@@ -9,16 +11,24 @@ import {
 import { ImpactTableCard } from "@/components/cards/impact-table-card";
 import { simulationScenarios } from "@/lib/detail-data";
 
-export const metadata = {
-  title: "Simulation — RiskTerminal AI",
-};
-
 export default function SimulationPage() {
-  const primary = simulationScenarios[0];
-  const others = simulationScenarios.slice(1);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [running, setRunning] = useState(false);
+
+  const runScenario = useCallback((index: number) => {
+    if (running) return;
+    setRunning(true);
+    setTimeout(() => {
+      setActiveIndex(index);
+      setRunning(false);
+    }, 1400);
+  }, [running]);
+
+  const primary = simulationScenarios[activeIndex];
+  const others = simulationScenarios.filter((_, i) => i !== activeIndex);
 
   return (
-    <div className="grid grid-cols-12 gap-4 auto-rows-auto">
+    <div className="grid grid-cols-12 gap-4 pt-8 auto-rows-auto">
 
       {/* ── Row 1: Scenario config + Results overview ── */}
       <div className="col-span-5">
@@ -82,13 +92,22 @@ export default function SimulationPage() {
 
             {/* CTA */}
             <button
+              onClick={() => runScenario(activeIndex)}
+              disabled={running}
               className={cn(
                 "w-full py-2.5 rounded-sm font-mono text-[12px] font-semibold uppercase tracking-widest",
-                "bg-bg-elevated border border-border-active text-text-primary",
-                "hover:bg-bg-panel-hover hover:border-border-active transition-colors duration-100"
+                "border transition-colors duration-100",
+                running
+                  ? "bg-bg-elevated border-accent-blue text-accent-blue cursor-not-allowed"
+                  : "bg-bg-elevated border-border-active text-text-primary hover:bg-bg-panel-hover hover:border-border-active"
               )}
             >
-              Run Simulation
+              {running ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse inline-block" />
+                  Running...
+                </span>
+              ) : "Run Simulation"}
             </button>
           </div>
         </div>
@@ -203,18 +222,22 @@ export default function SimulationPage() {
                   {scenario.description}
                 </p>
                 <button
+                  onClick={() => runScenario(simulationScenarios.indexOf(scenario))}
+                  disabled={running}
                   className={cn(
                     "w-full py-2 rounded-sm font-mono text-[11px] font-semibold uppercase tracking-widest",
-                    "bg-bg-elevated border border-border-active text-text-primary",
-                    "hover:bg-bg-panel-hover transition-colors duration-100"
+                    "border transition-colors duration-100",
+                    running
+                      ? "bg-bg-elevated border-border-subtle text-text-tertiary cursor-not-allowed"
+                      : "bg-bg-elevated border-border-active text-text-primary hover:bg-bg-panel-hover"
                   )}
                 >
-                  Run Scenario
+                  {running ? "Running..." : "Run Scenario"}
                 </button>
               </div>
 
               {/* Right: key metrics */}
-              <div className="border-l border-border-subtle pl-5 min-w-[160px]">
+              <div className="border-l border-border-subtle pl-5 min-w-40">
                 <div className="space-y-3">
                   <div>
                     <span className="text-[10px] text-text-tertiary font-mono uppercase tracking-wide block">

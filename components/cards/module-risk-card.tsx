@@ -47,7 +47,7 @@ export function ModuleRiskCard({ data }: ModuleRiskCardProps) {
         </div>
 
         {/* Progress bar */}
-        <div className="h-[3px] w-full bg-bg-primary rounded-full overflow-hidden">
+        <div className="h-0.75 w-full bg-bg-primary rounded-full overflow-hidden">
           <div
             className={cn("h-full rounded-full", getRiskBgClass(data.level))}
             style={{ width: `${clampedValue}%` }}
