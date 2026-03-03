@@ -41,10 +41,10 @@ export function TopBar() {
       {/* Wordmark */}
       <div className="flex items-center gap-2 min-w-50">
         <span className="font-mono text-[13px] font-semibold tracking-[0.2em] text-text-secondary uppercase">
-          RiskTerminal
+          NEXIS
         </span>
         <span className="font-mono text-[10px] text-text-tertiary tracking-wider">
-          AI
+          ALPHA
         </span>
       </div>
 
