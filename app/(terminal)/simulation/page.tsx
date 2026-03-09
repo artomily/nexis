@@ -9,9 +9,13 @@ import {
   getRiskLabel,
 } from "@/lib/risk-levels";
 import { ImpactTableCard } from "@/components/cards/impact-table-card";
-import { simulationScenarios } from "@/lib/detail-data";
+import { useSimulationData } from "@/lib/hooks/use-simulation-data";
+import { simulationScenarios as staticScenarios } from "@/lib/detail-data";
 
 export default function SimulationPage() {
+  const { data: simData, isLive } = useSimulationData();
+
+  const scenarios = simData?.scenarios ?? staticScenarios;
   const [activeIndex, setActiveIndex] = useState(0);
   const [running, setRunning] = useState(false);
 
@@ -24,8 +28,8 @@ export default function SimulationPage() {
     }, 1400);
   }, [running]);
 
-  const primary = simulationScenarios[activeIndex];
-  const others = simulationScenarios.filter((_, i) => i !== activeIndex);
+  const primary = scenarios[activeIndex] ?? scenarios[0];
+  const others = scenarios.filter((_, i) => i !== activeIndex);
 
   return (
     <div className="grid grid-cols-12 gap-4 pt-8 auto-rows-auto">
@@ -34,10 +38,19 @@ export default function SimulationPage() {
       <div className="col-span-5">
         <div className="bg-bg-panel border border-border-subtle rounded-sm flex flex-col h-full">
           {/* Header */}
-          <div className="px-5 py-3 border-b border-border-subtle">
+          <div className="px-5 py-3 border-b border-border-subtle flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-[0.22em] text-text-tertiary font-mono">
               Active Scenario
             </span>
+            {isLive && (
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                </span>
+                <span className="text-[9px] font-mono text-green-400 uppercase tracking-widest">Live Baseline</span>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-5 p-5 flex-1">
@@ -222,7 +235,7 @@ export default function SimulationPage() {
                   {scenario.description}
                 </p>
                 <button
-                  onClick={() => runScenario(simulationScenarios.indexOf(scenario))}
+                  onClick={() => runScenario(scenarios.indexOf(scenario))}
                   disabled={running}
                   className={cn(
                     "w-full py-2 rounded-sm font-mono text-[11px] font-semibold uppercase tracking-widest",
