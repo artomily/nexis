@@ -1,18 +1,36 @@
+"use client";
+
 import { ModuleHeroCard } from "@/components/cards/module-hero-card";
 import { KeyIndicatorCard } from "@/components/cards/key-indicator-card";
 import { AlertFeedCard } from "@/components/cards/alert-feed-card";
 import { RiskTimelineCard } from "@/components/cards/risk-timeline-card";
 import { DataTableCard } from "@/components/cards/data-table-card";
-import { moduleRiskSummaries } from "@/lib/mock-data";
+import { useModuleData } from "@/lib/hooks/use-module-data";
+import { useMarketData } from "@/lib/hooks/use-market-data";
 import { moduleDetails } from "@/lib/detail-data";
 
-export const metadata = {
-  title: "Derivatives Risk — RiskTerminal AI",
-};
-
 export default function DerivativesPage() {
-  const module = moduleRiskSummaries.find((m) => m.id === "derivatives")!;
-  const detail = moduleDetails["derivatives"];
+  const { data: realModule } = useModuleData("derivatives");
+  const { data: market } = useMarketData();
+
+  const module = market.moduleRiskSummaries.find((m) => m.id === "derivatives")!;
+  const staticDetail = moduleDetails["derivatives"];
+
+  const detail = {
+    ...staticDetail,
+    keyIndicators: realModule?.keyIndicators ?? staticDetail.keyIndicators,
+    alerts: realModule?.alerts ?? staticDetail.alerts,
+    timeline: realModule?.timeline ?? staticDetail.timeline,
+  };
+
+  const tableRows = realModule?.tableData ?? [
+    { label: "Binance", value: "$14.2B (37%)" },
+    { label: "Bybit", value: "$8.7B (23%)" },
+    { label: "OKX", value: "$6.1B (16%)" },
+    { label: "CME", value: "$4.8B (13%)" },
+    { label: "dYdX", value: "$2.6B (7%)" },
+    { label: "Others", value: "$1.8B (4%)" },
+  ];
 
   return (
     <div className="grid grid-cols-12 gap-4 auto-rows-auto">
@@ -39,14 +57,7 @@ export default function DerivativesPage() {
       <div className="col-span-4">
         <DataTableCard
           title="OI Concentration by Venue"
-          rows={[
-            { label: "Binance", value: "$14.2B (37%)" },
-            { label: "Bybit", value: "$8.7B (23%)" },
-            { label: "OKX", value: "$6.1B (16%)" },
-            { label: "CME", value: "$4.8B (13%)" },
-            { label: "dYdX", value: "$2.6B (7%)" },
-            { label: "Others", value: "$1.8B (4%)" },
-          ]}
+          rows={tableRows}
         />
       </div>
 

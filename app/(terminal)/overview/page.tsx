@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { MarketRiskCore } from "@/components/cards/market-risk-core";
 import { RiskMomentumCard } from "@/components/cards/risk-momentum-card";
@@ -5,19 +7,19 @@ import { ModuleRiskCard } from "@/components/cards/module-risk-card";
 import { WideModuleCard } from "@/components/cards/wide-module-card";
 import { RiskTimelineCard } from "@/components/cards/risk-timeline-card";
 import { SimulationCard } from "@/components/cards/simulation-card";
-import {
-  marketRiskIndex,
-  intelligenceReport,
-  momentumData,
-  moduleRiskSummaries,
-  riskTimeline,
-} from "@/lib/mock-data";
-
-export const metadata = {
-  title: "Overview — RiskTerminal AI",
-};
+import { useMarketData } from "@/lib/hooks/use-market-data";
 
 export default function OverviewPage() {
+  const { data, isLive, isLoading } = useMarketData();
+
+  const {
+    marketRiskIndex,
+    intelligenceReport,
+    momentumData,
+    moduleRiskSummaries,
+    riskTimeline,
+  } = data;
+
   const liquidity = moduleRiskSummaries.find((m) => m.id === "liquidity")!;
   const derivatives = moduleRiskSummaries.find((m) => m.id === "derivatives")!;
   const whale = moduleRiskSummaries.find((m) => m.id === "whale")!;
@@ -26,6 +28,17 @@ export default function OverviewPage() {
 
   return (
     <div className="grid grid-cols-12 gap-4 auto-rows-auto pt-8">
+
+      {/* ── Data source indicator ── */}
+      {isLive && (
+        <div className="col-span-12 flex items-center gap-2 text-[10px] font-mono text-text-tertiary justify-end -mb-2">
+          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>LIVE DATA — {data.source === "chainlink" ? "CHAINLINK DATA FEEDS" : "COINGECKO API"}</span>
+          <span className="text-text-tertiary/50">|</span>
+          <span>BTC ${data.prices.btc.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+          <span>ETH ${data.prices.eth.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+        </div>
+      )}
 
       {/* ── Row 1: Hero + Momentum ── */}
       <div className="col-span-8">

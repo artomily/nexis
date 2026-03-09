@@ -1,18 +1,36 @@
+"use client";
+
 import { ModuleHeroCard } from "@/components/cards/module-hero-card";
 import { KeyIndicatorCard } from "@/components/cards/key-indicator-card";
 import { AlertFeedCard } from "@/components/cards/alert-feed-card";
 import { RiskTimelineCard } from "@/components/cards/risk-timeline-card";
 import { DataTableCard } from "@/components/cards/data-table-card";
-import { moduleRiskSummaries } from "@/lib/mock-data";
+import { useModuleData } from "@/lib/hooks/use-module-data";
+import { useMarketData } from "@/lib/hooks/use-market-data";
 import { moduleDetails } from "@/lib/detail-data";
 
-export const metadata = {
-  title: "Whale Activity — RiskTerminal AI",
-};
-
 export default function WhalePage() {
-  const module = moduleRiskSummaries.find((m) => m.id === "whale")!;
-  const detail = moduleDetails["whale"];
+  const { data: realModule } = useModuleData("whale");
+  const { data: market } = useMarketData();
+
+  const module = market.moduleRiskSummaries.find((m) => m.id === "whale")!;
+  const staticDetail = moduleDetails["whale"];
+
+  const detail = {
+    ...staticDetail,
+    keyIndicators: realModule?.keyIndicators ?? staticDetail.keyIndicators,
+    alerts: realModule?.alerts ?? staticDetail.alerts,
+    timeline: realModule?.timeline ?? staticDetail.timeline,
+  };
+
+  const tableRows = realModule?.tableData ?? [
+    { label: "CB Prime → Exchange", value: "12,400 BTC" },
+    { label: "Binance Whale Inflow", value: "8,200 BTC" },
+    { label: "OKX Whale Inflow", value: "4,600 BTC" },
+    { label: "ETH Whale Accum.", value: "+$340M" },
+    { label: "Top 100 Net Δ (7D)", value: "−34,200 BTC" },
+    { label: "Wallets Active >1K BTC", value: "847" },
+  ];
 
   return (
     <div className="grid grid-cols-12 gap-4 auto-rows-auto">
@@ -39,14 +57,7 @@ export default function WhalePage() {
       <div className="col-span-4">
         <DataTableCard
           title="Recent Whale Movements"
-          rows={[
-            { label: "CB Prime → Exchange", value: "12,400 BTC" },
-            { label: "Binance Whale Inflow", value: "8,200 BTC" },
-            { label: "OKX Whale Inflow", value: "4,600 BTC" },
-            { label: "ETH Whale Accum.", value: "+$340M" },
-            { label: "Top 100 Net Δ (7D)", value: "−34,200 BTC" },
-            { label: "Wallets Active >1K BTC", value: "847" },
-          ]}
+          rows={tableRows}
         />
       </div>
 

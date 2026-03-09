@@ -1,18 +1,36 @@
+"use client";
+
 import { ModuleHeroCard } from "@/components/cards/module-hero-card";
 import { KeyIndicatorCard } from "@/components/cards/key-indicator-card";
 import { AlertFeedCard } from "@/components/cards/alert-feed-card";
 import { RiskTimelineCard } from "@/components/cards/risk-timeline-card";
 import { DataTableCard } from "@/components/cards/data-table-card";
-import { moduleRiskSummaries } from "@/lib/mock-data";
+import { useModuleData } from "@/lib/hooks/use-module-data";
+import { useMarketData } from "@/lib/hooks/use-market-data";
 import { moduleDetails } from "@/lib/detail-data";
 
-export const metadata = {
-  title: "Stablecoin Flow — RiskTerminal AI",
-};
-
 export default function StablecoinPage() {
-  const module = moduleRiskSummaries.find((m) => m.id === "stablecoin")!;
-  const detail = moduleDetails["stablecoin"];
+  const { data: realModule } = useModuleData("stablecoin");
+  const { data: market } = useMarketData();
+
+  const module = market.moduleRiskSummaries.find((m) => m.id === "stablecoin")!;
+  const staticDetail = moduleDetails["stablecoin"];
+
+  const detail = {
+    ...staticDetail,
+    keyIndicators: realModule?.keyIndicators ?? staticDetail.keyIndicators,
+    alerts: realModule?.alerts ?? staticDetail.alerts,
+    timeline: realModule?.timeline ?? staticDetail.timeline,
+  };
+
+  const tableRows = realModule?.tableData ?? [
+    { label: "USDT Total Supply", value: "$118.4B" },
+    { label: "USDT on Tron", value: "$58.2B (49%)" },
+    { label: "USDC Total Supply", value: "$34.8B" },
+    { label: "DAI Total Supply", value: "$5.2B" },
+    { label: "7D USDT Redemptions", value: "$890M" },
+    { label: "7D USDC Mints", value: "$210M" },
+  ];
 
   return (
     <div className="grid grid-cols-12 gap-4 auto-rows-auto">
@@ -39,14 +57,7 @@ export default function StablecoinPage() {
       <div className="col-span-4">
         <DataTableCard
           title="Stablecoin Supply Breakdown"
-          rows={[
-            { label: "USDT Total Supply", value: "$118.4B" },
-            { label: "USDT on Tron", value: "$58.2B (49%)" },
-            { label: "USDC Total Supply", value: "$34.8B" },
-            { label: "DAI Total Supply", value: "$5.2B" },
-            { label: "7D USDT Redemptions", value: "$890M" },
-            { label: "7D USDC Mints", value: "$210M" },
-          ]}
+          rows={tableRows}
         />
       </div>
 
