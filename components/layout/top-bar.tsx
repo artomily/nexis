@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { marketRiskIndex } from "@/lib/mock-data";
+import { useRiskIndex } from "@/lib/hooks/use-risk-index";
 import { formatRiskValue, formatMomentum } from "@/lib/format";
 import {
   getRiskColorClass,
@@ -29,7 +29,7 @@ const moduleLabels: Record<string, string> = {
 
 export function TopBar() {
   const pathname = usePathname();
-  const data = marketRiskIndex;
+  const { data, isLive } = useRiskIndex();
   const riskLevel = getRiskLevelFromValue(data.value);
   const stateLevel = getMarketStateColor(data.state);
 
@@ -46,6 +46,14 @@ export function TopBar() {
         <span className="font-mono text-[10px] text-text-tertiary tracking-wider">
           ALPHA
         </span>
+        {/* Live indicator — green when reading from Chainlink */}
+        <span
+          className={cn(
+            "size-1.5 rounded-full",
+            isLive ? "bg-emerald-400 animate-pulse" : "bg-text-tertiary"
+          )}
+          title={isLive ? "Live from Chainlink" : "Using mock data"}
+        />
       </div>
 
       {/* Center cluster */}
